@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch import device
 from torchvision import datasets
-from torchvision.transforms import v2
+from torchvision.datasets import ImageFolder
+from torchvision.models import ResNet
 import torchvision.models as models
 from torchmetrics.classification import Accuracy, ConfusionMatrix
 import torch
@@ -14,27 +15,29 @@ from src import resnet18_model_def
 # Later (or in a new session), load the model for inference
 # ==========================
 # Re-initialize the same model architecture
-inference_model = models.resnet18(pretrained=False)  # Pretrained=False, since we'll load our own weights
-num_features = inference_model.fc.in_features
+inference_model: ResNet = models.resnet18(pretrained=False)
+num_features: int = inference_model.fc.in_features
 inference_model.fc = nn.Linear(num_features, 4)
 
 # Load the saved weights
-save_path = "/home/zachary/PycharmProjects/OCTVision/model_weights.pth"
+save_path: str = "/home/zachary/PycharmProjects/OCTVision/model_weights.pth"
 inference_model.load_state_dict(torch.load(save_path))
 print("Model weights loaded successfully.")
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device: device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 inference_model.to(device)
 
 # Set model to evaluation mode
 inference_model.eval()
 
-test_dataset = datasets.ImageFolder(
+test_dataset: ImageFolder = datasets.ImageFolder(
     root="/home/zachary/PycharmProjects/OCTVision/resources/OCT2017/test",
     transform=resnet18_model_def.preprocessing_pipeline
 )
 
-test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=4)
+test_loader: DataLoader[ImageFolder] = DataLoader(
+    test_dataset, batch_size=64, shuffle=False, num_workers=4
+)
 
 # Assuming test_loader, inference_model, and device are already defined
 # Initialize torchmetrics metrics
