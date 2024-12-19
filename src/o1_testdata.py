@@ -8,6 +8,8 @@ from torchmetrics.classification import Accuracy, ConfusionMatrix
 import torch
 from torch.utils.data import DataLoader
 
+from src import resnet18_model_def
+
 # ==========================
 # Later (or in a new session), load the model for inference
 # ==========================
@@ -27,23 +29,9 @@ inference_model.to(device)
 # Set model to evaluation mode
 inference_model.eval()
 
-# ==========================
-# Set up the test dataset and dataloader
-# ==========================
-# Use the same transformations as the training set for consistency
-test_transforms = v2.Compose([
-    v2.Grayscale(num_output_channels=1),
-    v2.Resize((224, 224)),  # Resize all images to 224x224 (size used for ResNet models)
-    v2.ToTensor(),  # Convert PIL.Image to torch.Tensor
-    v2.Lambda(lambda x: x[:, 10:-10, 10:-10]),
-    v2.Lambda(lambda x: x.repeat(3, 1, 1)),
-    v2.Normalize(mean=[0], std=[1])
-])
-
-
 test_dataset = datasets.ImageFolder(
     root="/home/zachary/PycharmProjects/OCTVision/resources/OCT2017/test",
-    transform=test_transforms
+    transform=resnet18_model_def.preprocessing_pipeline
 )
 
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=4)
