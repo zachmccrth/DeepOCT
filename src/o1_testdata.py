@@ -1,4 +1,5 @@
 import torch.nn as nn
+from matplotlib import pyplot as plt
 from torch import device
 from torchvision import datasets
 from torchvision.datasets import ImageFolder
@@ -64,6 +65,14 @@ with torch.no_grad():
         # Accumulate predictions and labels for metrics
         all_predictions.append(predicted)
         all_labels.append(labels)
+
+        for i, prediction in enumerate(predicted):
+            if prediction != labels[i]:
+                plt.title(f"Predicted: {prediction.item()}, Actual: {labels[i].item()}")
+                plt.imshow(images[i].cpu().numpy()[0,:,:], cmap="gray")
+                plt.show()
+
+
 
 # Concatenate all predictions and labels
 all_predictions = torch.cat(all_predictions)
