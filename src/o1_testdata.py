@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from torch import device
 from torchvision import datasets
@@ -49,7 +48,7 @@ confusion_matrix_metric = ConfusionMatrix(num_classes=num_classes, task="multicl
 inference_model.eval()
 
 # Perform evaluation
-all_preds = []
+all_predictions = []
 all_labels = []
 
 with torch.no_grad():
@@ -63,16 +62,16 @@ with torch.no_grad():
         _, predicted = torch.max(outputs, 1)
 
         # Accumulate predictions and labels for metrics
-        all_preds.append(predicted)
+        all_predictions.append(predicted)
         all_labels.append(labels)
 
 # Concatenate all predictions and labels
-all_preds = torch.cat(all_preds)
+all_predictions = torch.cat(all_predictions)
 all_labels = torch.cat(all_labels)
 
 # Calculate metrics using torchmetrics
-accuracy = accuracy_metric(all_preds, all_labels)
-confusion_matrix = confusion_matrix_metric(all_preds, all_labels)
+accuracy = accuracy_metric(all_predictions, all_labels)
+confusion_matrix = confusion_matrix_metric(all_predictions, all_labels)
 
 # Print results
 print(f"Test Accuracy: {accuracy.item() * 100:.2f}%")
