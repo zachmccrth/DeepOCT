@@ -24,7 +24,7 @@ model = models.resnet18(weights='DEFAULT')
 # If you want to fine-tune the model for your 4-class problem:
 # Replace the last fully connected layer with a new one that has 4 outputs
 num_features = model.fc.in_features
-model.fc = nn.Linear(resnet18_model_def.INPUT_FEATURES, resnet18_model_def.OUTPUT_FEATURES)
+model.fc = nn.Linear(num_features, resnet18_model_def.OUTPUT_FEATURES)
 
 # Move model to GPU if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
