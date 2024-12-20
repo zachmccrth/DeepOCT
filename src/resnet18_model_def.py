@@ -1,14 +1,27 @@
-from torchvision.transforms import v2
+from typing import Callable, Any
+
+import PIL
+import numpy as np
 
 INPUT_FEATURES = 224
 OUTPUT_FEATURES = 4
 
-preprocessing_pipeline = v2.Compose([
-    v2.Grayscale(num_output_channels=1),
-    v2.Resize((INPUT_FEATURES, INPUT_FEATURES)),  # Resize all images to 224x224 (size used for ResNet models)
-    v2.ToTensor(),  # Convert PIL.Image to torch.Tensor
-    v2.Lambda(lambda x: x[:, 10:-10, 10:-10]),
-    v2.Lambda(lambda x: x.repeat(3, 1, 1)),
-    v2.Normalize(mean=[0], std=[1])
-])
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
+
+def albumentations_to_pytorch_transform(transform: Callable) -> Callable:
+    def wrapper(image, **kwargs):
+        if isinstance(image, PIL.Image.Image):
+            image = np.array(image)
+        return transform(image=image, **kwargs)['image']
+    return wrapper
+
+preprocessing_pipeline = albumentations_to_pytorch_transform(
+    A.Compose([
+        A.ToGray(always_apply=True),  # Converts the image to grayscale
+        A.Resize(INPUT_FEATURES, INPUT_FEATURES),  # Resize all images to the desired size
+        A.Normalize(mean=[0.4], std=[0.2]),  # Normalize the image based on the given mean & std
+        ToTensorV2()  # Converts the numpy array to PyTorch tensor, ensuring dtype float32
+    ]))
 
