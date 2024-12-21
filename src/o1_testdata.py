@@ -36,7 +36,7 @@ test_dataset: ImageFolder = datasets.ImageFolder(
 )
 
 test_loader: DataLoader[ImageFolder] = DataLoader(
-    test_dataset, batch_size=64, shuffle=False, num_workers=4
+    test_dataset, batch_size=256, shuffle=False, num_workers=6
 )
 
 # Assuming test_loader, inference_model, and device are already defined

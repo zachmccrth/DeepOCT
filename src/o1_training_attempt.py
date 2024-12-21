@@ -16,7 +16,7 @@ train_dataset = datasets.ImageFolder(
 )
 
 # Create the DataLoader
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=6)
 
 # Load a pretrained ResNet model
 model = models.resnet18(weights='DEFAULT')
@@ -28,6 +28,7 @@ model.fc = nn.Linear(num_features, resnet18_model_def.OUTPUT_FEATURES)
 
 # Move model to GPU if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(">>> Using device:", device, "\n\n")
 model.to(device)
 
 # Example training loop snippet
